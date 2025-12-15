@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarefas</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f8fafc;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius-md: 0.5rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 0;
+            height: 100svh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        main {
+            padding: var(--spacing-xl) var(--spacing-md);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            margin: 0 0 var(--spacing-md);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .input {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border);
+            font-size: 1rem;
+            background: var(--bg-primary);
+            transition: var(--transition);
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgb(99 102 241 / 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: none;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: var(--spacing-sm);
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tasks-card {
+            padding: var(--spacing-lg);
+        }
+
+        .tasks-header,
+        .task-row {
+            display: grid;
+            grid-template-columns: 0.5fr 2fr 3fr 0.5fr;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .tasks-header {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .task-row {
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .task-row:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+
+        .task-name {
+            font-weight: 500;
+        }
+
+        .task-sub {
+            text-decoration: line-through;
+        }
+
+        .task-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .task-del {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-sm);
+            border-radius: var(--radius-md);
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            /* margin-top: var(--spacing-sm); */
+            margin: auto;
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            text-align: center;
+            padding: var(--spacing-md);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+
+            .tasks-header,
+            .task-row {
+                grid-template-columns: 0.5fr 2.5fr;
+                grid-template-rows: auto auto;
+            }
+
+            .task-desc {
+                grid-column: 2 / 3;
+            }
+        }
+    </style>
+
+    <script>
+        let tarefas = [
+            { name: 'Arrumar cama', status: true, desc: 'Arrumar a cama ao acordar' },
+        ];
+
+        function adicionarTarefa() {
+            const tarefaInput = document.getElementById('task');
+            const descInput = document.getElementById('desc');
+            const tarefa = tarefaInput.value.trim();
+            const desc = descInput.value.trim();
+
+            if (!tarefa) {
+                alert('Digite o nome da tarefa.');
+                return;
+            }
+
+            tarefas.push({
+                name: tarefa,
+                desc: desc || 'Sem descrição',
+                status: false
+            });
+
+            tarefaInput.value = '';
+            descInput.value = '';
+            displayTarefas();
+        }
+
+        function toggleStatus(index) {
+            tarefas[index].status = !tarefas[index].status;
+            displayTarefas();
+        }
+        function deleteItem(index) {
+            tarefas = tarefas.filter(tarefa => tarefa.name != tarefas[index].name)
+            console.log(tarefas)
+            displayTarefas()
+        }
+
+        function displayTarefas() {
+            const list = document.getElementById('lista-tarefas');
+            list.innerHTML = '';
+
+            tarefas.forEach((tarefa, index) => {
+                const row = document.createElement('div');
+                row.className = 'task-row';
+
+                row.innerHTML = `
+          <div>
+            <input type="checkbox" class="checkbox" ${tarefa.status ? 'checked' : ''} onclick="toggleStatus(${index})">
+          </div>
+          <div class="task-name">${tarefa.name}</div>
+          <div class="task-desc">${tarefa.desc}</div>
+          <div><button class="task-del" onClick="deleteItem(${index})">❌</button></div>
+        `;
+
+                tarefa.status && row.classList.add('task-sub')
+                list.appendChild(row);
+            });
+        }
+    </script>
+</head>
+
+<body onload="displayTarefas()">
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">Tarefas ✅</div>
+            <div style="font-size:0.9rem; opacity:0.8;">Lista simples de tarefas</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="card">
+                <h1 class="card-title">Adicionar tarefa</h1>
+                <div class="form-group">
+                    <label for="task">Tarefa</label>
+                    <input id="task" type="text" class="input" placeholder="Ex.: Estudar HTML">
+                </div>
+                <div class="form-group">
+                    <label for="desc">Descrição</label>
+                    <input id="desc" type="text" class="input" placeholder="Ex.: 30 minutos de estudo">
+                </div>
+                <button class="btn" onclick="adicionarTarefa()">Adicionar tarefa</button>
+            </section>
+
+            <section class="card tasks-card">
+                <div class="tasks-header">
+                    <span>Feito</span>
+                    <span>Tarefa</span>
+                    <span>Descrição</span>
+                    <span>Apagar</span>
+                </div>
+                <div id="lista-tarefas"></div>
+            </section>
+        </div>
+    </main>
+    <footer>
+        Tarefas
+    </footer>
+</body>
+
+</html>
