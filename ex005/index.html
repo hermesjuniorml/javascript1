@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Likes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+        }
+
+        .post,
+        .test {
+            max-width: 90%;
+            margin: 0 20px;
+            flex-grow: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .popover-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: #666;
+            font-size: 15px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .like-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .like-btn.liked {
+            color: #e91e63;
+            background: rgba(233, 30, 99, 0.1);
+        }
+
+        .popover {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            margin-bottom: 8px;
+        }
+
+        .popover::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }
+
+        .popover-wrapper:hover .popover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-info h2 {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .time {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 0 20px 20px;
+            min-width: 350px;
+        }
+
+        .text {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .image {
+            width: 100%;
+            height: 250px;
+            min-width: 350px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .like-section {
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .heart {
+            width: 20px;
+            height: 18px;
+            position: relative;
+            background: currentColor;
+            transform: rotate(-45deg);
+            opacity: 0.3;
+        }
+
+        .like-btn.liked .heart {
+            opacity: 1;
+        }
+
+        input,
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 10px;
+        }
+
+        li {
+            padding: 4px;
+            background: #f9f9f9;
+            margin: 2px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test" style="padding: 2em;">
+        <div class="header">Adicione likes para teste</div>
+        <input id="input-like-test" type="text" placeholder="Digite um nome" />
+        <button id="add-like-test">Adicionar</button>
+        <button id="reset-test">Limpar todos</button>
+        <ul id="lista-likes" class="content"></ul>
+    </div>
+
+    <div class="post">
+        <div class="header">
+            <div class="avatar">UF</div>
+            <div class="user-info">
+                <h2>Usuário Fictício</h2>
+                <div class="time">1 mês atrás</div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="text">Post fictício 🌄</div>
+            <div class="image">imagem</div>
+        </div>
+        <div class="like-section">
+            <div class="popover-wrapper">
+                <button class="like-btn" id="like-btn" onclick="toggleLike(this)">
+                    <span>👍 Like</span>
+                </button>
+                <div class="popover" id="popover">
+                    Ninguém curtiu
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Exemplos iniciais
+        let likes_exemplo = ["Fulano", "Ciclano", "Beltrano", "Sicrano"];
+
+        // carrega os eventos iniciais
+        addEventListener('load', () => (renderTestList(), insertLiked()))
+
+
+        // lê eventos de adição
+        document.getElementById('add-like-test').addEventListener('click', (e) => {
+            const nome = document.querySelector('#input-like-test');
+            const nome_value = nome.value.toString().trim();
+            if (!nome_value) {
+                alert('NOME VAZIO!');
+                return;
+            }
+            likes_exemplo.push(nome_value);
+            nome.value = '';
+            renderTestList();
+            insertLiked()
+        });
+
+        // Lê eventos de reet
+        document.getElementById('reset-test').addEventListener('click', (e) => {
+            likes_exemplo = [];
+            document.querySelector('#lista-likes').innerHTML = '';
+            insertLiked()
+        });
+
+
+        // renderiza no DOM os Likes de test
+        function renderTestList() {
+            const lista = document.querySelector('#lista-likes');
+            lista.innerHTML = '';
+            likes_exemplo.forEach(nome => {
+                const li = document.createElement('li');
+                li.textContent = nome;
+                lista.appendChild(li);
+            });
+        }
+
+
+        // Renderiza graficamente se está liked ou não
+        function toggleLike(btn) {
+            btn.classList.toggle('liked');
+        }
+
+        // insere no popover o texto de acordo com a quantidade
+        function insertLiked() {
+            const popover = document.getElementById('popover')
+            const num_elementos = likes_exemplo.length
+            switch (num_elementos) {
+                case 0:
+                    popover.innerHTML = 'Ninguém curtiu'
+                    break
+                case 1:
+                    popover.innerHTML = `${likes_exemplo[0]} curtiu.`
+                    break
+                case 2:
+                    popover.innerHTML = `${likes_exemplo[0]} e ${likes_exemplo[1]} curtiram.`
+                    break
+                default:
+                    popover.innerHTML = `${likes_exemplo[0]}, ${likes_exemplo[1]} e mais ${likes_exemplo.length - 2} pessoas curtiram.`
+                    break
+            }
+        }
+    </script>
+</body>
+
+</html>
